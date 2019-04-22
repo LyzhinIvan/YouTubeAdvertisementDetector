@@ -1,0 +1,15 @@
+{
+    "name": "YouTube Advertisement Skipper",
+    "version": "1.0",
+    "description": "This extension allow to skip blogger advertisements automatically.",
+    "permissions": [
+        "activeTab"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["https://www.youtube.com/watch*"],
+            "js": ["contentScript.js"]
+        }
+    ],
+    "manifest_version": 2
+}

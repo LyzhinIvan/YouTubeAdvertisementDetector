@@ -3,7 +3,8 @@
     "version": "1.0",
     "description": "This extension allow to skip blogger advertisements automatically.",
     "permissions": [
-        "activeTab"
+        "activeTab",
+        "http://localhost:1234/*"
     ],
     "content_scripts": [
         {

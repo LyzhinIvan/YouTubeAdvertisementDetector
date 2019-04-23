@@ -23,7 +23,7 @@ function processVideo() {
         xhr.open('GET', 'http://localhost:1234/' + videoId);
         xhr.onload = function() {
             var resp = JSON.parse(xhr.responseText);
-            console.log(resp['ads']);
+            console.log(resp);
         };
         xhr.send();
     }

@@ -29,6 +29,12 @@ class TestEvaluationMethod(unittest.TestCase):
         self.assertEqual(1, calc_union([], [(1, 2)]))
         self.assertEqual(5, calc_union([(1, 2), (3, 5)], [(1.5, 3.5), (4.5, 6)]))
 
+    def test_IoU(self):
+        self.assertEqual(0, calc_IoU({'1': []}, {'1': [(1, 2)]}))
+        self.assertEqual(1, calc_IoU({'1': [(1, 2)]}, {'1': [(1, 2)]}))
+        self.assertEqual(1, calc_IoU({'1': []}, {'1': []}))
+        self.assertEqual(0.25, calc_IoU({'1': [(1, 2)]}, {'1': [(1, 3), (4, 6)]}))
+
     def test_diff(self):
         self.assertEqual(0, calc_diff([], []))
         self.assertEqual(0, calc_diff([], [(1, 2)]))

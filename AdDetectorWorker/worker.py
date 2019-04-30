@@ -17,8 +17,13 @@ def main():
             time.sleep(1)
         else:
             print('Processing video {}'.format(video_id))
-            ytdl.load_all(video_id)
-            r.set(video_id, json.dumps(model.find_ads(video_id)))
+            info = ytdl.load_info(video_id)
+            if info["is_live"]:
+                r.set(video_id, "LIVE")
+            else:
+                ytdl.load_all(video_id)
+                ads = model.find_ads(video_id)
+                r.set(video_id, json.dumps(ads))
             print('Finished {}'.format(video_id))
 
 

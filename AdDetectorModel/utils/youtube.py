@@ -1,4 +1,5 @@
 import os
+import json
 import youtube_dl
 import ffmpeg
 
@@ -18,6 +19,21 @@ class YouTubeDownloader:
 
     def _get_sub_path(self, video_id, lang='ru', format='vtt'):
         return '{}.{}'.format(self._get_file_path(video_id), lang, format)
+
+    def _get_info_path(self, video_id):
+        return '{}.info.json'.format(self._get_file_path(video_id))
+
+    def load_info(self, video_id):
+        if not os.path.exists(self._get_info_path(video_id)):
+            opts = {
+                'skip_download': True,
+                'outtmpl': self._get_file_path(video_id),
+                'writeinfojson': True
+            }
+            with youtube_dl.YoutubeDL(opts) as ytdl:
+                ytdl.download(['https://www.youtube.com/watch?v={}'.format(video_id)])
+        with open(self._get_info_path(video_id), 'r') as f:
+            return json.load(f)
 
     def load_video(self, video_id):
         if os.path.exists(self._get_video_path(video_id)):

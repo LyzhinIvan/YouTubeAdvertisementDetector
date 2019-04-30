@@ -11,6 +11,12 @@ class TestEvaluationMethod(unittest.TestCase):
         self.assertEqual(0.5, f_score(0.5, 0.5))
         self.assertEqual(1, f_score(1, 1))
 
+    def test_precision(self):
+        self.assertEqual(0, calc_precision({'1': []}, {'1': []}))
+
+    def test_recall(self):
+        self.assertEqual(0, calc_recall({'1': []}, {'1': []}))
+
     def test_intersection(self):
         self.assertEqual(0, calc_intersection([], []))
         self.assertEqual(0, calc_intersection([(1, 2)], []))

@@ -1,5 +1,3 @@
-from typing import List, Dict, Tuple
-
 from AdDetectorUtils.types import *
 from ..model import AdDetectorModel
 
@@ -55,7 +53,7 @@ def calc_precision(real_markups : Markups, predicted_markups : Markups) -> float
         tp += calc_intersection(real_markups[video_id], predicted_markups[video_id])
         fp = calc_diff(predicted_markups[video_id], real_markups[video_id])
 
-    return tp / (tp + fp)
+    return 0 if tp + fp == 0 else tp / (tp + fp)
 
 
 def calc_recall(real_markups : Markups, predicted_markups : Markups) -> float:
@@ -67,7 +65,7 @@ def calc_recall(real_markups : Markups, predicted_markups : Markups) -> float:
         tp += calc_intersection(real_markups[video_id], predicted_markups[video_id])
         fp = calc_diff(real_markups[video_id], predicted_markups[video_id])
 
-    return tp / (tp + fn)
+    return 0 if tp + fn == 0 else tp / (tp + fn)
 
 
 def calc_diff(first_ads : AdsList, second_ads : AdsList):

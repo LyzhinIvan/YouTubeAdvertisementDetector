@@ -4,10 +4,12 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from redis import Redis
 
+from AdDetectorUtils.config import config
+
 app = Flask(__name__)
 CORS(app)
 
-r = Redis(host='35.210.120.162', port=6379, db=0, decode_responses=True, encoding='utf-8')
+r = Redis(host=config.get('redis', 'host'), port=config.get('redis', 'port'), decode_responses=True)
 
 
 @app.route('/<string:videoId>')

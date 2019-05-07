@@ -12,6 +12,7 @@ class YouTubeDownloader:
 
     def load_info(self, video_id):
         if not os.path.exists(self._get_info_path(video_id)):
+            print('Loading info for {}'.format(video_id))
             opts = {
                 'skip_download': True,
                 'outtmpl': join(get_dir(video_id), video_id),
@@ -25,6 +26,7 @@ class YouTubeDownloader:
     def load_video(self, video_id):
         if video_exists(video_id):
             return
+        print('Loading video for {}'.format(video_id))
         opts = {
             'format': '(mp4)[height<=360]',
             'outtmpl': get_video_path(video_id)
@@ -36,6 +38,7 @@ class YouTubeDownloader:
         if audio_exists(video_id):
             return
         self.load_video(video_id)
+        print('Extracting audio for {}'.format(video_id))
         ffmpeg\
             .input(get_video_path(video_id))\
             .output(get_audio_path(video_id), acodec='copy')\
@@ -45,6 +48,7 @@ class YouTubeDownloader:
         for lang in langs:
             if subs_exists(video_id, lang):
                 continue
+            print('Loading {} subtitles for {}'.format(lang, video_id))
             opts = {
                 'writeautomaticsub': True,
                 'subtitleslangs': langs,

@@ -4,8 +4,10 @@ from AdDetectorModel.model import AdDetectorModel
 
 def evaluate(model: AdDetectorModel, test_markups: Markups) -> Dict[str, float]:
     predicted_markups = {}
-    for video_id in test_markups:
+    for idx, video_id in enumerate(test_markups):
+        print('Predicting for video {} ({}/{})'.format(video_id, idx + 1, len(test_markups)))
         predicted_markups[video_id] = model.find_ads(video_id)
+        print('{}: real {}, pred {}'.format(video_id, test_markups[video_id], predicted_markups[video_id]))
     eval_results = {
         'IoU': calc_IoU(test_markups, predicted_markups),
         'precision': calc_precision(test_markups, predicted_markups),

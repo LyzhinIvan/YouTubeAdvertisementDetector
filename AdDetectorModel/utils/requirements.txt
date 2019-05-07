@@ -1,3 +1,5 @@
 youtube-dl
 ffmpeg-python
 scenedetect
+webvtt-py
+nltk

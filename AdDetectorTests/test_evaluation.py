@@ -15,11 +15,13 @@ class TestEvaluationMethod(unittest.TestCase):
         self.assertEqual(0, calc_precision({'1': []}, {'1': []}))
         self.assertEqual(1, calc_precision({'1': [(2, 3)]}, {'1': [(2, 3)]}))
         self.assertEqual(0.5, calc_precision({'1': [(2, 3)]}, {'1': [(2, 4)]}))
+        self.assertEqual(0.75, calc_precision({'1': [(2, 3)], '2': [(4, 6)]}, {'1': [(2, 4)], '2': [(4, 6)]}))
 
     def test_recall(self):
         self.assertEqual(0, calc_recall({'1': []}, {'1': []}))
         self.assertEqual(1, calc_recall({'1': [(2, 3)]}, {'1': [(2, 3)]}))
         self.assertEqual(0.5, calc_recall({'1': [(2, 4)]}, {'1': [(2, 3)]}))
+        self.assertEqual(0.75, calc_recall({'1': [(2, 4)], '2': [(4, 6)]}, {'1': [(2, 3)], '2': [(4, 6)]}))
 
     def test_intersection(self):
         self.assertEqual(0, calc_intersection([], []))

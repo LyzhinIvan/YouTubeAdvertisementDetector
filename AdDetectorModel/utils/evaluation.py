@@ -52,7 +52,7 @@ def calc_precision(real_markups: Markups, predicted_markups: Markups) -> float:
 
     for video_id in predicted_markups:
         tp += calc_intersection(real_markups[video_id], predicted_markups[video_id])
-        fp = calc_diff(predicted_markups[video_id], real_markups[video_id])
+        fp += calc_diff(predicted_markups[video_id], real_markups[video_id])
 
     return 0 if tp + fp == 0 else tp / (tp + fp)
 
@@ -64,7 +64,7 @@ def calc_recall(real_markups: Markups, predicted_markups: Markups) -> float:
 
     for video_id in predicted_markups:
         tp += calc_intersection(real_markups[video_id], predicted_markups[video_id])
-        fn = calc_diff(real_markups[video_id], predicted_markups[video_id])
+        fn += calc_diff(real_markups[video_id], predicted_markups[video_id])
 
     return 0 if tp + fn == 0 else tp / (tp + fn)
 

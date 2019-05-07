@@ -1,4 +1,7 @@
+import pickle
 from os.path import exists, join
+
+from scenedetect import ThresholdDetector
 
 from AdDetectorUtils.paths import get_dir, get_video_path
 
@@ -9,12 +12,38 @@ from scenedetect.detectors import ContentDetector
 
 
 class SceneDetectionManager:
-    def __init__(self):
+    def __init__(self, detector_type='content', threshold=None, save_scenes=False):
+        assert detector_type in ['content', 'threshold']
+        if threshold is None:
+            # default values from documentaion PySceneDetect
+            threshold = 30 if detector_type == 'content' else 12
+        self.detector_type = detector_type
+        self.threshold = threshold
+        self.save_scenes = True
         self.cache = {}
+
+    def _create_detector(self):
+        if self.detector_type == 'content':
+            return ContentDetector(threshold=self.threshold)
+        else:
+            return ThresholdDetector(threshold=self.threshold)
+
+    def get_scenes_file(self, video_id):
+        filename = '{}_{}_{}.scenes'.format(video_id, self.detector_type, self.threshold)
+        return join(get_dir(video_id), filename)
 
     def detect_scenes(self, video_id):
         if video_id in self.cache:
             return self.cache[video_id]
+        scenes_file_path = self.get_scenes_file(video_id)
+        if exists(scenes_file_path):
+            print('loading scenes from ', scenes_file_path)
+            with open(scenes_file_path, 'rb') as f:
+                scenes = pickle.load(f)
+            self.cache[video_id] = scenes
+            return scenes
+
+        print('Detecting scenes for {}'.format(video_id))
 
         stats_file_path = join(get_dir(video_id), video_id + '.stats.csv')
 
@@ -34,7 +63,14 @@ class SceneDetectionManager:
 
             video_manager.start()
             scene_manager.detect_scenes(frame_source=video_manager)
-            self.cache[video_id] = scene_manager.get_scene_list(base_timecode)
+            scenes_list = scene_manager.get_scene_list(base_timecode)
+            scenes = [(scene[0].get_seconds(), scene[1].get_seconds()) for scene in scenes_list]
+            self.cache[video_id] = scenes
+            if self.save_scenes:
+                scenes_file_path = self.get_scenes_file(video_id)
+                print('saving scenes to ', scenes_file_path)
+                with open(scenes_file_path, 'wb') as f:
+                    pickle.dump(scenes, f)
 
             # We only write to the stats file if a save is required:
             if stats_manager.is_save_required():

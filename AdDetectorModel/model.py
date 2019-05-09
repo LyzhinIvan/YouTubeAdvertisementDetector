@@ -1,6 +1,7 @@
 from AdDetectorModel.utils.scenes import SceneDetectionManager
 from AdDetectorModel.utils.subtitles import Subtitles
 from AdDetectorModel.utils.texts import preprocess_russian_text
+from AdDetectorModel.utils.youtube import VideoInfo
 import nltk
 from sklearn.feature_extraction.text import CountVectorizer
 from catboost import CatBoostClassifier
@@ -36,6 +37,7 @@ class AdDetectorModel:
         result = []
 
         for video_id in video_ids:
+            info = VideoInfo(video_id)
             subs = Subtitles(video_id, preprocess_russian_text)
             r = 0
             ads = []
@@ -48,13 +50,14 @@ class AdDetectorModel:
                 texts = [map(lambda word: self.buzz_words[word], text) for text in texts]
                 texts = [' '.join(text) for text in texts]
                 subs_part = ' '.join(texts)
-                x = self.vectorizer.transform([subs_part]).toarray()[0]
+                x = list(self.vectorizer.transform([subs_part]).toarray()[0])
+                x.append(subs.captions[l].start / info.duration)
                 y = self.subs_classifier.predict(x)
                 if y == 1:
                     ads.append((subs.captions[l].start, subs.captions[r].end))
             merged_ads = []
             for ad in ads:
-                if len(merged_ads) == 0 or merged_ads[-1][1] < ad[0]:
+                if len(merged_ads) == 0 or ad[0] - merged_ads[-1][1] > 10:
                     merged_ads.append(ad)
                 else:
                     merged_ads.append((merged_ads.pop()[0], ad[1]))
@@ -80,7 +83,9 @@ class AdDetectorModel:
                 texts = [map(lambda word: self.buzz_words[word], text) for text in texts]
                 texts = [' '.join(text) for text in texts]
                 subs_part = ' '.join(texts)
-                x = self.vectorizer.transform([subs_part]).toarray()[0]
+                x = list(self.vectorizer.transform([subs_part]).toarray()[0])
+                info = VideoInfo(video_id)
+                x.append(subs.captions[l].start / info.duration)
                 seg = (subs.captions[l].start, subs.captions[r].end)
                 if self._intersect_ad(seg, markups[video_id]):
                     continue
@@ -90,7 +95,7 @@ class AdDetectorModel:
                 else:
                     Y.append(0)
         print('X size: ', len(X))
-        self.subs_classifier = CatBoostClassifier(iterations=100)
+        self.subs_classifier = CatBoostClassifier(iterations=50, max_depth=3, random_state=0)
         self.subs_classifier.fit(X, Y)
 
     @staticmethod

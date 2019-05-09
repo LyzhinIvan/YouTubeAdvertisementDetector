@@ -3,4 +3,5 @@ ffmpeg-python
 opencv-python
 scenedetect
 webvtt-py
+pycaption
 nltk

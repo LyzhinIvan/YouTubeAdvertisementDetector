@@ -19,7 +19,7 @@ class SceneDetectionManager:
             threshold = 30 if detector_type == 'content' else 12
         self.detector_type = detector_type
         self.threshold = threshold
-        self.save_scenes = True
+        self.save_scenes = save_scenes
         self.cache = {}
 
     def _create_detector(self):

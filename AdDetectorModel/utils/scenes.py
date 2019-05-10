@@ -50,7 +50,7 @@ class SceneDetectionManager:
         video_manager = VideoManager([get_video_path(video_id)])
         stats_manager = StatsManager()
         scene_manager = SceneManager(stats_manager)
-        scene_manager.add_detector(ContentDetector())
+        scene_manager.add_detector(self._create_detector())
         base_timecode = video_manager.get_base_timecode()
 
         try:

@@ -10,7 +10,7 @@ from catboost import CatBoostClassifier
 class AdDetectorModel:
     def __init__(self):
         self.stemmer = nltk.stem.SnowballStemmer('russian')
-        self.sdm = SceneDetectionManager()
+        self.sdm = SceneDetectionManager(detector_type='content', threshold=20, save_scenes=True)
         self.buzz_words = {}
         with open('artifacts/buzzwords.txt', encoding='utf-8') as f:
             for line in f.readlines():
@@ -39,22 +39,21 @@ class AdDetectorModel:
         for video_id in video_ids:
             info = VideoInfo(video_id)
             subs = Subtitles(video_id, preprocess_russian_text)
+            scenes = self.sdm.detect_scenes(video_id)
             r = 0
             ads = []
-            for l in range(len(subs.captions)):
-                while r + 1 < len(subs.captions) and subs.captions[r].end - subs.captions[l].start < self.subs_part_len:
+            for l in range(len(scenes)):
+                while r + 1 < len(scenes) and scenes[r][1] - scenes[l][0] < self.subs_part_len:
                     r += 1
-                texts = map(lambda cap: cap.text, subs.captions[l:r + 1])
-                texts = map(str.split, texts)
-                texts = [filter(lambda word: word in self.buzz_words, text) for text in texts]
-                texts = [map(lambda word: self.buzz_words[word], text) for text in texts]
-                texts = [' '.join(text) for text in texts]
-                subs_part = ' '.join(texts)
+                words = map(str.strip, subs.fulltext(scenes[l][0], scenes[r][1]).split())
+                words = filter(lambda word: word in self.buzz_words, words)
+                words = map(lambda word: self.buzz_words[word], words)
+                subs_part = ' '.join(words)
                 x = list(self.vectorizer.transform([subs_part]).toarray()[0])
-                x.append(subs.captions[l].start / info.duration)
-                y = self.subs_classifier.predict(x)
+                x.append(scenes[l][0] / info.duration)
+                y = self.subs_classifier.predict([x])[0]
                 if y == 1:
-                    ads.append((subs.captions[l].start, subs.captions[r].end))
+                    ads.append((scenes[l][0], scenes[r][1]))
             merged_ads = []
             for ad in ads:
                 if len(merged_ads) == 0 or ad[0] - merged_ads[-1][1] > 10:
@@ -73,20 +72,19 @@ class AdDetectorModel:
         for idx, video_id in enumerate(video_ids):
             print('processing video {} ({}/{})'.format(video_id, idx + 1, len(video_ids)))
             subs = Subtitles(video_id, preprocess_russian_text)
+            scenes = self.sdm.detect_scenes(video_id)
             r = 0
-            for l in range(len(subs.captions)):
-                while r + 1 < len(subs.captions) and subs.captions[r].end - subs.captions[l].start < self.subs_part_len:
+            for l in range(len(scenes)):
+                while r + 1 < len(scenes) and scenes[r][1] - scenes[l][0] < self.subs_part_len:
                     r += 1
-                texts = map(lambda cap: cap.text, subs.captions[l:r + 1])
-                texts = map(str.split, texts)
-                texts = [filter(lambda word: word in self.buzz_words, text) for text in texts]
-                texts = [map(lambda word: self.buzz_words[word], text) for text in texts]
-                texts = [' '.join(text) for text in texts]
-                subs_part = ' '.join(texts)
+                words = map(str.strip, subs.fulltext(scenes[l][0], scenes[r][1]).split())
+                words = filter(lambda word: word in self.buzz_words, words)
+                words = map(lambda word: self.buzz_words[word], words)
+                subs_part = ' '.join(words)
                 x = list(self.vectorizer.transform([subs_part]).toarray()[0])
                 info = VideoInfo(video_id)
-                x.append(subs.captions[l].start / info.duration)
-                seg = (subs.captions[l].start, subs.captions[r].end)
+                x.append(scenes[l][0] / info.duration)
+                seg = (scenes[l][0], scenes[r][1])
                 if self._intersect_ad(seg, markups[video_id]):
                     continue
                 X.append(x)
@@ -95,7 +93,7 @@ class AdDetectorModel:
                 else:
                     Y.append(0)
         print('X size: ', len(X))
-        self.subs_classifier = CatBoostClassifier(iterations=50, max_depth=3, random_state=0)
+        self.subs_classifier = CatBoostClassifier(iterations=150, max_depth=3, random_state=0)
         self.subs_classifier.fit(X, Y)
 
     @staticmethod

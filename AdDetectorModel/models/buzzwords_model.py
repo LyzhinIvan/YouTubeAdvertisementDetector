@@ -6,6 +6,7 @@ from AdDetectorModel.utils.youtube import VideoInfo
 import nltk
 from sklearn.feature_extraction.text import CountVectorizer
 from catboost import CatBoostClassifier
+import os
 
 class BuzzwordsBasedModel(BaseAdDetectorModel):
     def __init__(self):
@@ -13,7 +14,7 @@ class BuzzwordsBasedModel(BaseAdDetectorModel):
         self.stemmer = nltk.stem.SnowballStemmer('russian')
         self.sdm = SceneDetectionManager(detector_type='content', threshold=20, save_scenes=True)
         self.buzz_words = {}
-        with open('artifacts/buzzwords.txt', encoding='utf-8') as f:
+        with open(os.path.join(os.path.dirname(__file__), 'artifacts/buzzwords.txt'), encoding='utf-8') as f:
             for line in f.readlines():
                 words = list(map(str.strip, line.split()))
                 if not words:
@@ -25,12 +26,20 @@ class BuzzwordsBasedModel(BaseAdDetectorModel):
         self.vectorizer.vocabulary = set(self.buzz_words.values())
         self.subs_part_len = 10
         self.subs_classifier = None
+        self._fitted = False
 
     def save(self, path):
-        pass
+        if not self._fitted:
+            raise Exception("Model is not fitted yet. Fit model before saving.")
+        if os.path.exists(path) and not os.path.isdir(path):
+            raise Exception("Path for saving should be directory.")
+        if not os.path.exists(path):
+            os.mkdir(path)
+        self.subs_classifier.save_model(os.path.join(path, 'catboost.model'))
 
     def load(self, path):
-        pass
+        self.subs_classifier = CatBoostClassifier()
+        self.subs_classifier.load_model(os.path.join(path, 'catboost.model'))
 
     def find_ads(self, video_ids):
         if not isinstance(video_ids, list):
@@ -96,6 +105,7 @@ class BuzzwordsBasedModel(BaseAdDetectorModel):
         print('X size: ', len(X))
         self.subs_classifier = CatBoostClassifier(iterations=150, max_depth=3, random_state=0)
         self.subs_classifier.fit(X, Y)
+        self._fitted = True
 
     @staticmethod
     def _inside_ad(seg, ads):

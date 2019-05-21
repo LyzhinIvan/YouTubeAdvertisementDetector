@@ -1,3 +1,4 @@
+from AdDetectorModel.models import BaseAdDetectorModel
 from AdDetectorModel.utils.scenes import SceneDetectionManager
 from AdDetectorModel.utils.subtitles import Subtitles
 from AdDetectorModel.utils.texts import preprocess_russian_text
@@ -6,9 +7,9 @@ import nltk
 from sklearn.feature_extraction.text import CountVectorizer
 from catboost import CatBoostClassifier
 
-
-class AdDetectorModel:
+class BuzzwordsBasedModel(BaseAdDetectorModel):
     def __init__(self):
+        super().__init__()
         self.stemmer = nltk.stem.SnowballStemmer('russian')
         self.sdm = SceneDetectionManager(detector_type='content', threshold=20, save_scenes=True)
         self.buzz_words = {}

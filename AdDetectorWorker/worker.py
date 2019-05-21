@@ -3,12 +3,12 @@ import time
 
 from redis import Redis
 
-from AdDetectorModel.model import AdDetectorModel
+from AdDetectorModel.models import BuzzwordsBasedModel
 from AdDetectorModel.utils.youtube import YouTubeDownloader
 
 
 def main():
-    model = AdDetectorModel()
+    model = BuzzwordsBasedModel()
     r = Redis(host='35.210.120.162', port=6379, db=0, decode_responses=True, encoding='utf-8')
     ytdl = YouTubeDownloader()
     while True:

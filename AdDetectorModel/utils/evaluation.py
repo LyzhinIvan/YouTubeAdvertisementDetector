@@ -1,8 +1,8 @@
 from AdDetectorUtils.types import *
-from AdDetectorModel.model import AdDetectorModel
+from AdDetectorModel.models import BaseAdDetectorModel
 
 
-def evaluate(model: AdDetectorModel, test_markups: Markups) -> Dict[str, float]:
+def evaluate(model: BaseAdDetectorModel, test_markups: Markups) -> Dict[str, float]:
     predicted_markups = {}
     for idx, video_id in enumerate(test_markups):
         print('Predicting for video {} ({}/{})'.format(video_id, idx + 1, len(test_markups)))
@@ -56,6 +56,9 @@ def calc_precision(real_markups: Markups, predicted_markups: Markups) -> float:
         tp += calc_intersection(real_markups[video_id], predicted_markups[video_id])
         fp += calc_diff(predicted_markups[video_id], real_markups[video_id])
 
+    print('tp: ', tp)
+    print('fp: ', fp)
+
     return 0 if tp + fp == 0 else tp / (tp + fp)
 
 
@@ -67,6 +70,9 @@ def calc_recall(real_markups: Markups, predicted_markups: Markups) -> float:
     for video_id in predicted_markups:
         tp += calc_intersection(real_markups[video_id], predicted_markups[video_id])
         fn += calc_diff(real_markups[video_id], predicted_markups[video_id])
+
+    print('tp: ', tp)
+    print('fn: ', fn)
 
     return 0 if tp + fn == 0 else tp / (tp + fn)
 

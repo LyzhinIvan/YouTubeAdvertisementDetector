@@ -1,0 +1,46 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        title Help
+        link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css', integrity='sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB', crossorigin='anonymous')
+        link(rel='stylesheet', href='/styles/help.css')
+    body.text-center(class='bg-light')
+        div(class='container', style='width: 600px')
+            h1 Инструкция
+            br
+            ul#instruction-list
+                li Данное приложение предназначено для выделения рекламных вставок в видеоролике
+                li В видеоролике достаточно найти один рекламный фрагмент, либо указать, что реклама в ролике отсутствует
+                li Рекламный фрагмент должен удовлетворять следующим требованиям:
+                ol#features-list
+                    li Длительность фрагмента от 5 секунд до 5 минут
+                    li Содержит название продукта, бренда и т.п.
+                    li По содержанию выделяется из основного содержания видео
+                li Для указания начала и конца рекламного фрагмента предназначены кнопки&nbsp;
+                    button [
+                    | &nbsp;и&nbsp;
+                    button ]
+                    | &nbsp;соответственно
+                li Выделять рекламные фрагменты необходимо с точностью до миллисекунд
+                li Для поиска точной позиции рекомендуется использовать покадровое перемещение
+                    |  с помощью кнопок&nbsp;
+                    button <
+                    | &nbsp;и&nbsp;
+                    button >
+                    |  или с помощью горячих клавиш
+                    b  <
+                    |  и
+                    b  >
+                    |  (работают в любой раскладке и без нажатия клавиши shift)
+                li Для перемещения по 5 секунд используйте кнопки&nbsp;
+                    button -5s
+                    | &nbsp;и&nbsp;
+                    button +5s
+                li Вы можете пропустить видео, если оно не нравится вам по названию/содержанию.
+                    | Для этого есть кнопка внизу страницы
+
+        button(onclick='window.location.href="/";', class='btn btn-link')
+            h5 Перейти на главную страницу
+
+        p.mt-5.mb-3.text-muted © 2018

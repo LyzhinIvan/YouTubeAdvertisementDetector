@@ -1,0 +1,28 @@
+body {
+    padding-top: 0;
+}
+
+.sebtn {
+    width: 100px;
+    margin: 10px;
+}
+
+.controls {
+    margin: auto;
+    text-align: center;
+}
+
+.pbound {
+    font-size: 22pt;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#player {
+    display: block;
+    margin: auto;
+}
+
+#btn-help {
+    position: absolute;
+}

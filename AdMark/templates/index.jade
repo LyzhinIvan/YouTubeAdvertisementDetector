@@ -1,0 +1,67 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='UTF-8')
+        title Ad Mark
+        link(rel='stylesheet', href='/styles/index.css')
+        link(rel='stylesheet', href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css', integrity='sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB', crossorigin='anonymous')
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+        script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js")
+        script(src='/scripts/index.js', type='text/javascript')
+    body(class='bg-light')
+        a(href="/help", class="btn btn-md btn-info" id="btn-help") ?
+        div(class='container')
+            h1(align='center')
+                | Score:
+                span#score #{score}
+            #player
+            br
+            #controls
+                div(style='text-align:center;')
+                    button#btn-minus5(onclick='minus5();', class='btn btn-default sebtn')
+                        h2 -5s
+                    button#btn-prev-frame(onclick='prevFrame();', class='btn btn-default sebtn')
+                        h2 <
+                    button#btn-play-pause(onclick='playStop();', class='btn btn-default sebtn')
+                        h2 &#9658
+                    button#btn-next-frame(onclick='nextFrame();', class='btn btn-default sebtn')
+                        h2 >
+                    button#btn-plus5(onclick='plus5();', class='btn btn-default sebtn')
+                        h2 +5s
+                    br
+                    span#p-start-ad(class='pbound') Начало
+                    button#btn-start-ad(onclick='markStartAd();', class='btn btn-default sebtn')
+                        h2 [
+                    button#btn-stop-ad(onclick='markStopAd();', class='btn btn-default sebtn')
+                        h2 ]
+                    span#p-stop-ad(class='pbound') Конец
+                    br
+                    input(id='checkbox-no-ads', type='checkbox', onchange='noAdsClick();')
+                    label(for='checkbox-no-ads') &nbsp;В ролике нет рекламных вставок
+                    br
+                    button#btn-save-ad(onclick='saveAd();', class='btn btn-default', disabled='disabled')
+                        h2 Сохранить
+                    br
+                    button#btn-skip(onclick='document.location.reload();', class='btn btn-link')
+                        h5 Пропустить это видео
+            p.mt-5.mb-3.text-muted.text-center © Ivan Lyzhin, 2018-2019
+        script.
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player('player', {
+                    height: '360',
+                    width: '640',
+                    videoId: '#{videoId}',
+                    events: {
+                        'onStateChange': onPlayerStateChange
+                    },
+                    playerVars: {
+                        rel: 0,
+                        autoplay: 0
+                    }
+                });
+            }

@@ -1,0 +1,16 @@
+.container {
+    padding-top: 10px;
+}
+
+#instruction-list {
+    text-align: justify;
+    font-size: 16pt;
+}
+
+#instruction-list li {
+    margin-bottom: 10px;
+}
+
+#features-list {
+    font-size: 14pt;
+}

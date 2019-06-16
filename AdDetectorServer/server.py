@@ -1,29 +1,46 @@
-import json
-
 from flask import Flask, jsonify
 from flask_cors import CORS
-from redis import Redis
+from pika import BlockingConnection, ConnectionParameters
+from pymongo import MongoClient
 
 from AdDetectorUtils.config import config
 
 app = Flask(__name__)
 CORS(app)
 
-r = Redis(host=config.get('redis', 'host'), port=config.get('redis', 'port'), decode_responses=True)
+print('Connecting to RabbitMQ...', end='')
+queue_conn = BlockingConnection(ConnectionParameters(
+    host=config.get('rabbitmq', 'Host') or 'localhost',
+    port=config.get('rabbitmq', 'Port') or 5672))
+channel = queue_conn.channel()
+channel.queue_declare("queries")
+print('OK')
+
+print('Connecting to MongoDB...', end='')
+mongo_host = config.get('mongo', 'Host') or 'localhost'
+mongo_port = int(config.get('mongo', 'Port')) or 27017
+mongo_db_name = config.get('mongo', 'Database') or 'addetector'
+mongo_query_results = MongoClient(mongo_host, mongo_port)\
+    .get_database(mongo_db_name)\
+    .get_collection('query_results')
+print('OK')
 
 
-@app.route('/<string:videoId>')
-def get_ads(videoId):
-    res = r.get(videoId)
-    if res == 'IN_QUEUE':
-        result = {'videoId': videoId, 'status': 'IN_QUEUE'}
-    elif res is None:
-        result = {'videoId': videoId, 'status': 'IN_QUEUE'}
-        r.set(videoId, 'IN_QUEUE')
-        r.rpush('queue', videoId)
+@app.route('/<video_id>')
+def get_ads(video_id):
+    obj = mongo_query_results.find_one({'videoId': video_id})
+    if obj is None:
+        obj = {'videoId': video_id, 'status': 'IN_QUEUE'}
+        mongo_query_results.insert_one(obj)
+        channel.basic_publish(exchange='',
+                              routing_key='queries',
+                              body=video_id)
+        result = {'videoId': video_id, 'status': 'IN_QUEUE'}
     else:
-        result = {'videoId': videoId, 'status': 'OK', 'ads': json.loads(res)}
-
+        result = {'videoId': video_id, 'status': obj['status']}
+        if 'ads' in obj:
+            result['ads'] = obj['ads']
+    print(result)
     return jsonify(result)
 
 

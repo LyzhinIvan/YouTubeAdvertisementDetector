@@ -83,3 +83,8 @@ class VideoInfo:
         with open(get_info_path(video_id)) as f:
             self.info = json.load(f)
         self.duration = self.info['duration']
+        self.fps = 25
+        for f in self.info['formats']:
+            if f['format_note'] == '360p' and f['ext'] == 'mp4':
+                self.fps = f['fps']
+                break

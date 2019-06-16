@@ -16,8 +16,9 @@ class Caption:
 
 
 class Subtitles:
-    def __init__(self, video_id, text_filter=lambda t: t):
-        self.captions = [Caption(cap.start_in_seconds, cap.end_in_seconds, text_filter(cap.text)) for cap in webvtt.read(get_subs_path(video_id)).captions]
+    def __init__(self, video_id, text_filter=lambda t: t, lang='ru'):
+        self.captions = [Caption(cap.start_in_seconds, cap.end_in_seconds, text_filter(cap.text))
+                         for cap in webvtt.read(get_subs_path(video_id, lang)).captions]
 
     def __iter__(self):
         for caption in self.captions:

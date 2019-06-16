@@ -2,6 +2,7 @@ var video = undefined;
 var currentVideoId = undefined;
 var adsList = [];
 var lastUrl = undefined;
+const requestInterval = 10000;
 
 setInterval(function() {
     if (document.URL !== lastUrl) {
@@ -48,14 +49,21 @@ function loadAds(videoId) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://localhost:1234/' + videoId);
     xhr.onload = function() {
+        if (xhr.status !== 200) {
+            setTimeout(loadAds.bind(this, videoId), requestInterval);
+            return;
+        }
         if (videoId !== currentVideoId) return;
         var resp = JSON.parse(xhr.responseText);
         console.log(resp);
         if (resp['status'] === 'OK') {
             adsList = resp['ads'];
         } else if (resp['status'] === 'IN_QUEUE') {
-            setTimeout(loadAds.bind(this, videoId), 10000)
+            setTimeout(loadAds.bind(this, videoId), requestInterval);
         }
+    };
+    xhr.onerror = function () {
+        setTimeout(loadAds.bind(this, videoId), requestInterval);
     };
     xhr.send();
 }

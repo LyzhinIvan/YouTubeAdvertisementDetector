@@ -1,12 +1,12 @@
 import pickle
 from os.path import exists, join
 
-from AdDetectorUtils.paths import get_dir, get_video_path
-
 from scenedetect.video_manager import VideoManager
 from scenedetect.scene_manager import SceneManager
 from scenedetect.stats_manager import StatsManager
 from scenedetect.detectors import ContentDetector, ThresholdDetector
+
+from AdDetectorUtils.paths import get_dir, get_video_path
 
 
 class SceneDetectionManager:

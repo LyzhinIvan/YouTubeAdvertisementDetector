@@ -14,7 +14,7 @@ class SceneDetectionManager:
         assert detector_type in ['content', 'threshold']
         if threshold is None:
             # default values from documentaion PySceneDetect
-            threshold = 30 if detector_type == 'content' else 12
+            threshold = 20 if detector_type == 'content' else 12
         self.detector_type = detector_type
         self.threshold = threshold
         self.save_scenes = save_scenes

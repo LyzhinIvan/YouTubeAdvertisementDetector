@@ -44,7 +44,7 @@ class BuzzwordsMLPBasedModel(BaseAdDetectorModel):
             pickle.dump(self.subs_classifier, f)
 
     def load(self, path):
-        with open(os.path.join(path, 'mlp.model')) as f:
+        with open(os.path.join(path, 'mlp.model'), 'rb') as f:
             self.subs_classifier = pickle.load(f)
         self._fitted = True
 

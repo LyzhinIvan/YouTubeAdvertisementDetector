@@ -1,3 +1,9 @@
-sklearn
-numpy
 catboost
+ffmpeg-python
+nltk
+numpy
+pycaption
+scenedetect
+sklearn
+webvtt-py
+youtube-dl

@@ -40,7 +40,7 @@ class BuzzwordsMLPBasedModel(BaseAdDetectorModel):
             raise Exception("Path for saving should be directory.")
         if not os.path.exists(path):
             os.mkdir(path)
-        with open(os.path.join(path, 'mlp.model')) as f:
+        with open(os.path.join(path, 'mlp.model'), 'wb') as f:
             pickle.dump(self.subs_classifier, f)
 
     def load(self, path):

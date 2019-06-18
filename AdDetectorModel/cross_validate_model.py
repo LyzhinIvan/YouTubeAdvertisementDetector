@@ -49,7 +49,7 @@ def main():
         print(avg_metrics)
     for metric in avg_metrics.keys():
         avg_metrics[metric] /= args.cv_splits
-        print('{}: {}'.format(metric, avg_metrics[metric]))
+        print('{}: {:.3f}'.format(metric, avg_metrics[metric]))
 
 
 if __name__ == "__main__":

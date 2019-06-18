@@ -52,6 +52,9 @@ class BuzzwordsLSTMBasedModel(BaseAdDetectorModel):
         self._fitted = True
 
     def find_ads(self, video_ids):
+        if not self._fitted:
+            raise Exception("Train or load model before inference")
+
         if not isinstance(video_ids, list):
             video_ids = [video_ids]
         result = []

@@ -98,7 +98,6 @@ class D2VBasedModel(BaseAdDetectorModel):
         Y = np.array(Y)
         print('X shape: ', X.shape)
         print('Y shape: ', Y.shape)
-        X, Y = RandomOverSampler(random_state=0, ratio=0.1).fit_resample(X, Y)
         self.subs_classifier = CatBoostClassifier(iterations=150, random_state=0)
         self.subs_classifier.fit(X, Y)
         self._fitted = True

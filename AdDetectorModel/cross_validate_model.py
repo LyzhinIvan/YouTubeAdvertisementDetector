@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 
 from sklearn.model_selection import StratifiedKFold
 
-from AdDetectorModel.models import BuzzwordsBasedModel
+from AdDetectorModel.models import BuzzwordsCBBasedModel
 from AdDetectorModel.utils.evaluation import evaluate
 from AdDetectorModel.utils.youtube import YouTubeDownloader
 from AdDetectorUtils.paths import *
@@ -41,7 +41,7 @@ def main():
         test_ids = [video_ids[idx] for idx in test_idx]
         train_markups = {video_id: markups[video_id] for video_id in train_ids}
         test_markups = {video_id: markups[video_id] for video_id in test_ids}
-        model = BuzzwordsBasedModel()
+        model = BuzzwordsCBBasedModel()
         model.train(train_markups)
         metrics = evaluate(model, test_markups)
         for metric, value in metrics.items():

@@ -1,7 +1,7 @@
 # AdMark
 #### Tool for annotation of advertisements in YouTube videos to collect data for models training.
 
-![AdMark screenshot](screenshot.png)
+![AdMark screenshot](https://raw.githubusercontent.com/LyzhinIvan/YouTubeAdvertisementDetector/master/AdMark/screenshot.png)
 
 ##### Steps to run:
 1. Register VK application for authentication purpose (or it is possible to remove authentication part of code).
